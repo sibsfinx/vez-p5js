@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>processing-vez</title>
     <style>
-      html, body { margin: 0; height: 100%; background: #111; }
+      /* Same tone as irisSewingSketch VIEWPORT_OUTSIDE_RGB [30, 32, 40] */
+      html, body { margin: 0; height: 100%; background: rgb(30, 32, 40); }
       body { display: grid; place-items: center; }
+      /* Match circular clip from irisSewingSketch (square viewBox, round art). */
+      canvas, body > svg { border-radius: 50%; max-width: min(92vw, 92vh); height: auto; }
     </style>
   </head>
   <body>
