@@ -1,175 +1,92 @@
 // iris sewing sketch
 import p5 from 'p5'
 import init from 'p5.js-svg'
-
 init(p5)
 
 new p5((p) => {
 	p.setup = () => {
-		p.createCanvas(800, 600, p.SVG)
-		p.strokeJoin(p.ROUND)
-		p.strokeCap(p.ROUND)
+		p.createCanvas(800, 580, p.SVG)
 		p.noFill()
+		p.strokeCap(p.ROUND)
+		p.strokeJoin(p.ROUND)
 	}
 
-	// tiny jitter so each render differs
-	function j(v) { return v + p.random(-3, 3) }
-	function ja() { return p.random(-0.06, 0.06) }
+	function j(n) { return n + p.random(-4, 4) }
 
-	// draw a closed curve through an array of [x,y] points
-	function shape(pts) {
+	// curves through a flat list of x,y pairs
+	function s(...xy) {
 		p.beginShape()
-		// duplicate first and last for curveVertex tangents
-		p.curveVertex(j(pts[0][0]), j(pts[0][1]))
-		for (let i = 0; i < pts.length; i++) {
-			p.curveVertex(j(pts[i][0]), j(pts[i][1]))
-		}
-		p.curveVertex(j(pts[0][0]), j(pts[0][1]))
-		p.curveVertex(j(pts[1][0]), j(pts[1][1]))
+		p.curveVertex(j(xy[xy.length-2]), j(xy[xy.length-1]))
+		for (let i = 0; i < xy.length; i += 2) p.curveVertex(j(xy[i]), j(xy[i+1]))
+		p.curveVertex(j(xy[0]), j(xy[1]))
+		p.curveVertex(j(xy[2]), j(xy[3]))
 		p.endShape(p.CLOSE)
-	}
-
-	// rotated shape helper
-	function rshape(cx, cy, pts, angle) {
-		p.push()
-		p.translate(cx, cy)
-		p.rotate(angle + ja())
-		shape(pts)
-		p.pop()
-	}
-
-	// petal template — narrow pointed oval, centered at 0,0
-	function narrowPetal(cx, cy, w, h, angle) {
-		rshape(cx, cy, [
-			[0, -h/2],
-			[w*0.3, -h*0.25],
-			[w*0.45, h*0.05],
-			[w*0.25, h*0.35],
-			[0, h/2],
-			[-w*0.25, h*0.35],
-			[-w*0.45, h*0.05],
-			[-w*0.3, -h*0.25]
-		], angle)
-	}
-
-	// wider, rounder petal
-	function widePetal(cx, cy, w, h, angle) {
-		rshape(cx, cy, [
-			[0, -h/2],
-			[w*0.4, -h*0.2],
-			[w*0.5, h*0.1],
-			[w*0.35, h*0.35],
-			[0, h/2],
-			[-w*0.3, h*0.38],
-			[-w*0.48, h*0.05],
-			[-w*0.35, -h*0.22]
-		], angle)
-	}
-
-	// asymmetric / cupped petal
-	function cupPetal(cx, cy, w, h, angle) {
-		rshape(cx, cy, [
-			[0, -h/2],
-			[w*0.35, -h*0.3],
-			[w*0.5, -h*0.05],
-			[w*0.4, h*0.25],
-			[w*0.1, h/2],
-			[-w*0.2, h*0.4],
-			[-w*0.45, h*0.1],
-			[-w*0.3, -h*0.2]
-		], angle)
-	}
-
-	// thin elongated leaf
-	function leafShape(cx, cy, w, h, angle) {
-		rshape(cx, cy, [
-			[0, -h/2],
-			[w*0.25, -h*0.2],
-			[w*0.3, h*0.15],
-			[w*0.15, h*0.4],
-			[0, h/2],
-			[-w*0.12, h*0.38],
-			[-w*0.25, h*0.1],
-			[-w*0.2, -h*0.25]
-		], angle)
 	}
 
 	p.draw = () => {
 		p.background(250, 247, 235)
 		let ctx = p.drawingContext
 
-		// ===== BLUE / INDIGO PETALS =====
+		// purple petals
 		p.stroke(75, 58, 148)
 		p.strokeWeight(1.7)
 		ctx.setLineDash([6, 5])
 
-		// -- top row: small scattered petals fanning left --
-		narrowPetal(100, 128, 55, 32, -0.7)
-		narrowPetal(118, 108, 48, 28, -0.4)
-		cupPetal(155, 100, 72, 38, -0.15)
-		narrowPetal(215, 92, 80, 38, -0.05)
+		// small upper left cluster
+		s(82,122, 72,108, 88,96, 110,100, 118,116, 108,132, 90,135)
+		s(112,105, 108,88, 128,82, 148,90, 152,108, 138,120, 118,118)
+		s(148,98, 165,78, 208,72, 242,84, 245,108, 220,122, 182,118, 155,110)
 
-		// -- top row: extending right --
-		widePetal(280, 88, 68, 36, 0.1)
-		narrowPetal(340, 92, 58, 30, 0.2)
-		narrowPetal(395, 105, 52, 28, 0.15)
-		narrowPetal(432, 120, 46, 26, 0.35)
+		// long upper sweep to the right
+		s(248,80, 318,65, 402,68, 452,88, 462,118, 438,140, 365,138, 292,122, 250,100)
 
-		// -- second row: medium overlapping --
-		widePetal(140, 148, 95, 52, 0.4)
-		cupPetal(220, 145, 85, 48, -0.15)
-		narrowPetal(130, 165, 80, 42, 0.6)
-		widePetal(290, 152, 78, 42, 0.1)
+		// tall right petal pointing up
+		s(438,72, 458,45, 480,52, 485,88, 472,118, 455,125, 438,100)
 
-		// -- center: big dense mass --
-		widePetal(225, 205, 145, 82, 0.15)
-		cupPetal(320, 215, 135, 78, -0.2)
-		widePetal(170, 235, 125, 72, 0.4)
-		cupPetal(275, 262, 118, 68, -0.05)
-		narrowPetal(370, 240, 105, 58, 0.25)
-		widePetal(195, 285, 100, 55, -0.3)
+		// second row left
+		s(98,145, 82,168, 88,205, 118,218, 155,208, 165,182, 148,155)
+		s(158,132, 172,108, 218,102, 258,116, 265,148, 242,168, 198,165, 162,150)
 
-		// -- right side trailing --
-		cupPetal(400, 290, 88, 50, 0.1)
-		narrowPetal(440, 335, 72, 40, -0.25)
+		// big center mass
+		s(112,205, 128,168, 188,158, 258,172, 292,205, 298,248, 272,285, 215,295, 158,278, 122,248, 108,222)
+		s(278,178, 338,158, 398,165, 438,195, 442,235, 418,268, 375,278, 318,275, 278,255, 258,222)
 
-		// -- lower cluster --
-		widePetal(350, 345, 82, 50, 0.45)
-		cupPetal(285, 372, 105, 60, -0.15)
-		narrowPetal(325, 405, 78, 44, 0.3)
-		narrowPetal(245, 415, 68, 38, -0.4)
+		// right trailing
+		s(352,252, 418,242, 468,262, 482,298, 460,335, 415,345, 368,338, 342,315, 342,280)
+		s(205,285, 218,258, 268,255, 300,272, 308,308, 290,345, 248,362, 205,348, 185,322, 188,298)
 
-		// ===== YELLOW ACCENTS =====
+		// lower cluster
+		s(282,342, 298,312, 345,308, 378,325, 385,358, 362,388, 320,398, 282,380, 268,360)
+		s(382,352, 432,338, 475,358, 484,392, 462,418, 425,425, 385,408, 368,380)
+		s(232,398, 245,372, 288,368, 318,382, 325,412, 308,435, 268,442, 238,428, 228,412)
+
+		// yellow accents
 		p.stroke(200, 172, 42)
 		p.strokeWeight(1.4)
 		ctx.setLineDash([4, 5])
 
-		narrowPetal(205, 108, 32, 44, 0.05)
-		narrowPetal(305, 105, 26, 34, -0.15)
-		cupPetal(242, 225, 30, 42, 0.25)
-		narrowPetal(340, 258, 26, 34, -0.1)
-		narrowPetal(290, 360, 28, 38, 0.15)
-		cupPetal(355, 388, 24, 32, -0.2)
+		s(200,108, 208,92, 222,88, 232,98, 228,118, 214,128, 202,120)
+		s(298,112, 305,96, 318,93, 328,103, 324,120, 311,126, 299,118)
+		s(248,220, 256,202, 270,198, 282,208, 278,228, 265,236, 250,228)
+		s(340,270, 348,254, 360,250, 370,260, 366,278, 353,286, 340,278)
+		s(290,368, 298,352, 312,348, 322,358, 318,376, 305,384, 291,376)
+		s(365,392, 373,376, 386,374, 396,384, 391,400, 378,407, 366,400)
 
-		// ===== GREEN STEMS / LEAVES =====
+		// green stems
 		p.stroke(42, 92, 52)
 		p.strokeWeight(1.5)
 		ctx.setLineDash([7, 5])
 
-		leafShape(168, 305, 38, 135, 0.65)
-		leafShape(205, 385, 32, 120, 0.45)
-		leafShape(305, 435, 28, 100, 0.25)
+		s(158,298, 148,315, 138,348, 135,382, 148,402, 164,408, 175,395, 178,360, 172,325)
+		s(172,372, 162,390, 158,418, 166,442, 180,450, 192,442, 195,418, 188,392)
+		s(298,438, 288,452, 284,480, 292,500, 305,505, 315,496, 318,470, 310,450)
 
 		ctx.setLineDash([])
 		p.noLoop()
 	}
 
 	p.keyPressed = () => {
-		if (p.key === 's' || p.key === 'S') {
-			p.save('iris-sew-' + p.millis() + '.svg')
-		}
-		if (p.key === 'r' || p.key === 'R') {
-			p.loop()
-		}
+		if (p.key === 's' || p.key === 'S') p.save('iris-sew-' + p.millis() + '.svg')
+		if (p.key === 'r' || p.key === 'R') p.loop()
 	}
 })
