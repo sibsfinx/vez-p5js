@@ -19,9 +19,9 @@ new p5((p) => {
 		p.strokeWeight(4)
 		for (let i = 4; i < 20; i++) {
 			for (let j = 4; j < 20; j++) {
-				let radius = p.random(400, 390)
+				let radius = 395
 				p.ellipse(i * 30, j * 30, radius, radius)
-				p.fill(p.random(0, 255), 30, 60)
+				p.fill(120, 30, 60)
 			}
 		}
 
@@ -29,7 +29,11 @@ new p5((p) => {
 		p.stroke(255)
 		p.beginShape()
 		for (let i = 0; i < 80; i++) {
-			p.curveVertex(p.random(0, 500), p.random(0, 500))
+			let t = (i / 80) * p.TWO_PI
+			p.curveVertex(
+				250 + 220 * p.cos(t * 1.3),
+				250 + 220 * p.sin(t * 0.9)
+			)
 		}
 		p.endShape()
 

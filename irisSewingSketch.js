@@ -11,8 +11,6 @@ new p5((p) => {
 		p.strokeJoin(p.ROUND)
 	}
 
-	function j(n) { return n + p.random(-5, 5) }
-
 	// one iris flower built from ellipses — all outlines, dashed
 	function iris(cx, cy, sz) {
 		let ctx = p.drawingContext
@@ -24,9 +22,9 @@ new p5((p) => {
 		for (let i = 0; i < 3; i++) {
 			let a = p.PI/6 + i * p.TWO_PI / 3
 			p.push()
-			p.translate(j(cx + p.cos(a) * sz * 0.32), j(cy + p.sin(a) * sz * 0.32 + sz * 0.06))
+			p.translate(cx + p.cos(a) * sz * 0.32, cy + p.sin(a) * sz * 0.32 + sz * 0.06)
 			p.rotate(a + p.HALF_PI)
-			p.ellipse(0, 0, j(sz * 0.52), j(sz * 1.05))
+			p.ellipse(0, 0, sz * 0.52, sz * 1.05)
 			p.pop()
 		}
 
@@ -37,9 +35,9 @@ new p5((p) => {
 		for (let i = 0; i < 3; i++) {
 			let a = -p.HALF_PI + i * p.TWO_PI / 3
 			p.push()
-			p.translate(j(cx + p.cos(a) * sz * 0.22), j(cy + p.sin(a) * sz * 0.28 - sz * 0.05))
+			p.translate(cx + p.cos(a) * sz * 0.22, cy + p.sin(a) * sz * 0.28 - sz * 0.05)
 			p.rotate(a + p.HALF_PI)
-			p.ellipse(0, 0, j(sz * 0.28), j(sz * 0.82))
+			p.ellipse(0, 0, sz * 0.28, sz * 0.82)
 			p.pop()
 		}
 
@@ -50,15 +48,15 @@ new p5((p) => {
 		for (let i = 0; i < 3; i++) {
 			let a = p.PI/6 + i * p.TWO_PI / 3
 			p.push()
-			p.translate(j(cx + p.cos(a) * sz * 0.14), j(cy + p.sin(a) * sz * 0.14))
+			p.translate(cx + p.cos(a) * sz * 0.14, cy + p.sin(a) * sz * 0.14)
 			p.rotate(a + p.HALF_PI)
-			p.ellipse(0, 0, j(sz * 0.14), j(sz * 0.36))
+			p.ellipse(0, 0, sz * 0.14, sz * 0.36)
 			p.pop()
 		}
 
 		// center circle
 		ctx.setLineDash([3, 4])
-		p.ellipse(j(cx), j(cy), j(sz * 0.16), j(sz * 0.16))
+		p.ellipse(cx, cy, sz * 0.16, sz * 0.16)
 
 		ctx.setLineDash([])
 	}
@@ -72,9 +70,9 @@ new p5((p) => {
 		let angle = p.atan2(y2 - y1, x2 - x1)
 		let d = p.dist(x1, y1, x2, y2)
 		p.push()
-		p.translate(j((x1+x2)/2), j((y1+y2)/2))
+		p.translate((x1 + x2) / 2, (y1 + y2) / 2)
 		p.rotate(angle)
-		p.ellipse(0, 0, j(w), j(d))
+		p.ellipse(0, 0, w, d)
 		p.pop()
 		ctx.setLineDash([])
 	}
