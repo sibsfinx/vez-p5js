@@ -1,4 +1,4 @@
-// iris sewing sketch
+// iris sewing sketch — ellipses, dashed outlines, gravity-arranged petals
 import p5 from 'p5'
 import init from 'p5.js-svg'
 init(p5)
@@ -11,77 +11,87 @@ new p5((p) => {
 		p.strokeJoin(p.ROUND)
 	}
 
-	function j(n) { return n + p.random(-4, 4) }
+	function j(n) { return n + p.random(-5, 5) }
 
-	// curves through a flat list of x,y pairs
-	function s(...xy) {
-		p.beginShape()
-		p.curveVertex(j(xy[xy.length-2]), j(xy[xy.length-1]))
-		for (let i = 0; i < xy.length; i += 2) p.curveVertex(j(xy[i]), j(xy[i+1]))
-		p.curveVertex(j(xy[0]), j(xy[1]))
-		p.curveVertex(j(xy[2]), j(xy[3]))
-		p.endShape(p.CLOSE)
+	// one iris flower built from ellipses — all outlines, dashed
+	function iris(cx, cy, sz) {
+		let ctx = p.drawingContext
+
+		// falls — wide petals that hang down by gravity
+		p.stroke(75, 58, 148)
+		p.strokeWeight(1.8)
+		ctx.setLineDash([6, 5])
+		for (let i = 0; i < 3; i++) {
+			let a = p.PI/6 + i * p.TWO_PI / 3
+			p.push()
+			p.translate(j(cx + p.cos(a) * sz * 0.32), j(cy + p.sin(a) * sz * 0.32 + sz * 0.06))
+			p.rotate(a + p.HALF_PI)
+			p.ellipse(0, 0, j(sz * 0.52), j(sz * 1.05))
+			p.pop()
+		}
+
+		// standards — narrower petals reaching up against gravity
+		p.stroke(110, 75, 168)
+		p.strokeWeight(1.5)
+		ctx.setLineDash([5, 5])
+		for (let i = 0; i < 3; i++) {
+			let a = -p.HALF_PI + i * p.TWO_PI / 3
+			p.push()
+			p.translate(j(cx + p.cos(a) * sz * 0.22), j(cy + p.sin(a) * sz * 0.28 - sz * 0.05))
+			p.rotate(a + p.HALF_PI)
+			p.ellipse(0, 0, j(sz * 0.28), j(sz * 0.82))
+			p.pop()
+		}
+
+		// yellow beard — small ellipses at base of each fall
+		p.stroke(200, 172, 42)
+		p.strokeWeight(1.3)
+		ctx.setLineDash([4, 5])
+		for (let i = 0; i < 3; i++) {
+			let a = p.PI/6 + i * p.TWO_PI / 3
+			p.push()
+			p.translate(j(cx + p.cos(a) * sz * 0.14), j(cy + p.sin(a) * sz * 0.14))
+			p.rotate(a + p.HALF_PI)
+			p.ellipse(0, 0, j(sz * 0.14), j(sz * 0.36))
+			p.pop()
+		}
+
+		// center circle
+		ctx.setLineDash([3, 4])
+		p.ellipse(j(cx), j(cy), j(sz * 0.16), j(sz * 0.16))
+
+		ctx.setLineDash([])
+	}
+
+	// leaf — one ellipse stretched between two points
+	function leaf(x1, y1, x2, y2, w) {
+		let ctx = p.drawingContext
+		p.stroke(42, 92, 52)
+		p.strokeWeight(1.4)
+		ctx.setLineDash([7, 5])
+		let angle = p.atan2(y2 - y1, x2 - x1)
+		let d = p.dist(x1, y1, x2, y2)
+		p.push()
+		p.translate(j((x1+x2)/2), j((y1+y2)/2))
+		p.rotate(angle)
+		p.ellipse(0, 0, j(w), j(d))
+		p.pop()
+		ctx.setLineDash([])
 	}
 
 	p.draw = () => {
 		p.background(250, 247, 235)
-		let ctx = p.drawingContext
 
-		// purple petals
-		p.stroke(75, 58, 148)
-		p.strokeWeight(1.7)
-		ctx.setLineDash([6, 5])
+		// leaves behind flowers
+		leaf(185, 430, 165, 235, 26)
+		leaf(180, 490, 225, 348, 20)
+		leaf(318, 510, 310, 388, 16)
 
-		// small upper left cluster
-		s(82,122, 72,108, 88,96, 110,100, 118,116, 108,132, 90,135)
-		s(112,105, 108,88, 128,82, 148,90, 152,108, 138,120, 118,118)
-		s(148,98, 165,78, 208,72, 242,84, 245,108, 220,122, 182,118, 155,110)
+		// three flowers — diagonal, left heavy
+		iris(195, 220, 148)
+		iris(332, 285, 122)
+		iris(438, 205, 98)
 
-		// long upper sweep to the right
-		s(248,80, 318,65, 402,68, 452,88, 462,118, 438,140, 365,138, 292,122, 250,100)
-
-		// tall right petal pointing up
-		s(438,72, 458,45, 480,52, 485,88, 472,118, 455,125, 438,100)
-
-		// second row left
-		s(98,145, 82,168, 88,205, 118,218, 155,208, 165,182, 148,155)
-		s(158,132, 172,108, 218,102, 258,116, 265,148, 242,168, 198,165, 162,150)
-
-		// big center mass
-		s(112,205, 128,168, 188,158, 258,172, 292,205, 298,248, 272,285, 215,295, 158,278, 122,248, 108,222)
-		s(278,178, 338,158, 398,165, 438,195, 442,235, 418,268, 375,278, 318,275, 278,255, 258,222)
-
-		// right trailing
-		s(352,252, 418,242, 468,262, 482,298, 460,335, 415,345, 368,338, 342,315, 342,280)
-		s(205,285, 218,258, 268,255, 300,272, 308,308, 290,345, 248,362, 205,348, 185,322, 188,298)
-
-		// lower cluster
-		s(282,342, 298,312, 345,308, 378,325, 385,358, 362,388, 320,398, 282,380, 268,360)
-		s(382,352, 432,338, 475,358, 484,392, 462,418, 425,425, 385,408, 368,380)
-		s(232,398, 245,372, 288,368, 318,382, 325,412, 308,435, 268,442, 238,428, 228,412)
-
-		// yellow accents
-		p.stroke(200, 172, 42)
-		p.strokeWeight(1.4)
-		ctx.setLineDash([4, 5])
-
-		s(200,108, 208,92, 222,88, 232,98, 228,118, 214,128, 202,120)
-		s(298,112, 305,96, 318,93, 328,103, 324,120, 311,126, 299,118)
-		s(248,220, 256,202, 270,198, 282,208, 278,228, 265,236, 250,228)
-		s(340,270, 348,254, 360,250, 370,260, 366,278, 353,286, 340,278)
-		s(290,368, 298,352, 312,348, 322,358, 318,376, 305,384, 291,376)
-		s(365,392, 373,376, 386,374, 396,384, 391,400, 378,407, 366,400)
-
-		// green stems
-		p.stroke(42, 92, 52)
-		p.strokeWeight(1.5)
-		ctx.setLineDash([7, 5])
-
-		s(158,298, 148,315, 138,348, 135,382, 148,402, 164,408, 175,395, 178,360, 172,325)
-		s(172,372, 162,390, 158,418, 166,442, 180,450, 192,442, 195,418, 188,392)
-		s(298,438, 288,452, 284,480, 292,500, 305,505, 315,496, 318,470, 310,450)
-
-		ctx.setLineDash([])
 		p.noLoop()
 	}
 
